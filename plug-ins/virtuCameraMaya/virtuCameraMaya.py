@@ -352,35 +352,33 @@ class VirtuCameraMaya(object):
         self._fout_lock = thread.allocate_lock()
         self._zconf_lock = thread.allocate_lock()
         self._tcp_lock = thread.allocate_lock()
-
-        self._scene_up_vector = self.__scene_up_vector()
-        self._z_to_y_matrix = self.__z_to_y_matrix()
-        self._y_to_z_matrix = self.__y_to_z_matrix()
+        self._scene_up_vector = self._get_scene_up_vector()
+        self._y_to_z_matrix = self._get_y_to_z_matrix()
+        self._z_to_y_matrix = self._get_z_to_y_matrix()
 
         self._start_ui()
 
-    def __scene_up_vector(self):
+    def _get_scene_up_vector(self):
         up_axis = omg.upAxis()
         return api.MVector(up_axis.x, up_axis.y, up_axis.z)
 
-    def _is_y_axis_up(self):
-        return bool(self._scene_up_vector.y)
-
-    def _is_z_axis_up(self):
-            return bool(self._scene_up_vector.z)      
-
-    def __y_to_z_matrix(self):
+    def _get_y_to_z_matrix(self):
         return api.MMatrix(((1.0, 0.0, 0.0, 0.0),
                             (0.0, 0.0, 1.0, 0.0,),
                             (0.0, -1.0, 0.0, 0.0,),
                             (0.0, 0.0, 0.0, 1.0)))
 
-    def __z_to_y_matrix(self):
+    def _get_z_to_y_matrix(self):
         return api.MMatrix(((1.0, 0.0, 0.0, 0.0),
                             (0.0, 0.0, -1.0, 0.0),
                             (0.0, 1.0, 0.0, 0.0),
                             (0.0, 0.0, 0.0, 1.0)))
 
+    def _is_y_axis_up(self):
+        return bool(self._scene_up_vector.y)
+
+    def _is_z_axis_up(self):
+        return bool(self._scene_up_vector.z)
 
     def _tcp_send(self, cmd, data=''):
         with self._tcp_lock:
